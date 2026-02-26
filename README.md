@@ -57,26 +57,26 @@ npm run lint
 
 ## 5) Environment Variables
 
-| Key                       | Required    | Description                             |
-| ------------------------- | ----------- | --------------------------------------- |
-| `PORT`                    | Yes         | API port                                |
-| `NODE_ENV`                | Yes         | Runtime environment                     |
-| `DATABASE_URL`            | Yes         | PostgreSQL connection string            |
-| `FRONTEND_URL`            | Recommended | Allowed CORS origin(s), comma-separated |
-| `JWT_ACCESS_SECRET`       | Yes         | Access token secret                     |
-| `JWT_ACCESS_EXPIRES_IN`   | Yes         | Access token TTL (ex: `1d`)             |
-| `JWT_LOGIN_SECRET`        | Yes         | Login token secret                      |
-| `JWT_LOGIN_EXPIRES_IN`    | Yes         | Login token TTL (ex: `15m`)             |
-| `BCRYPT_SALT_ROUNDS`      | Yes         | Password hash salt rounds               |
-| `ENABLE_TEST_ROLE_SWITCH` | Recommended | Enables `PATCH /users/test-role`        |
-| `CLOUDINARY_CLOUD_NAME`   | Yes         | Cloudinary cloud name                   |
-| `CLOUDINARY_API_KEY`      | Yes         | Cloudinary API key                      |
-| `CLOUDINARY_API_SECRET`   | Yes         | Cloudinary API secret                   |
-| `CLOUDINARY_FOLDER`       | Recommended | Cloudinary base folder                  |
-| `REQUEST_BODY_LIMIT`      | Recommended | JSON/body size limit (default `25mb`)   |
-| `DEFAULT_ADMIN_NAME`      | Recommended | Seed admin display name                 |
-| `DEFAULT_ADMIN_EMAIL`     | Recommended | Seed admin email                        |
-| `DEFAULT_ADMIN_PASSWORD`  | Recommended | Seed admin password                     |
+| Key                       | Required    | Description                                           |
+| ------------------------- | ----------- | ----------------------------------------------------- |
+| `PORT`                    | Yes         | API port                                              |
+| `NODE_ENV`                | Yes         | Runtime environment                                   |
+| `DATABASE_URL`            | Yes         | PostgreSQL connection string                          |
+| `FRONTEND_URL`            | Recommended | Allowed CORS origin(s), comma-separated (origin only) |
+| `JWT_ACCESS_SECRET`       | Yes         | Access token secret                                   |
+| `JWT_ACCESS_EXPIRES_IN`   | Yes         | Access token TTL (ex: `1d`)                           |
+| `JWT_LOGIN_SECRET`        | Yes         | Login token secret                                    |
+| `JWT_LOGIN_EXPIRES_IN`    | Yes         | Login token TTL (ex: `15m`)                           |
+| `BCRYPT_SALT_ROUNDS`      | Yes         | Password hash salt rounds                             |
+| `ENABLE_TEST_ROLE_SWITCH` | Recommended | Enables `PATCH /users/test-role`                      |
+| `CLOUDINARY_CLOUD_NAME`   | Yes         | Cloudinary cloud name                                 |
+| `CLOUDINARY_API_KEY`      | Yes         | Cloudinary API key                                    |
+| `CLOUDINARY_API_SECRET`   | Yes         | Cloudinary API secret                                 |
+| `CLOUDINARY_FOLDER`       | Recommended | Cloudinary base folder                                |
+| `REQUEST_BODY_LIMIT`      | Recommended | JSON/body size limit (default `25mb`)                 |
+| `DEFAULT_ADMIN_NAME`      | Recommended | Seed admin display name                               |
+| `DEFAULT_ADMIN_EMAIL`     | Recommended | Seed admin email                                      |
+| `DEFAULT_ADMIN_PASSWORD`  | Recommended | Seed admin password                                   |
 
 ## 6) Auth and Response Contract
 
@@ -261,7 +261,7 @@ Required Vercel environment variables:
 
 - `NODE_ENV=production`
 - `DATABASE_URL`
-- `FRONTEND_URL` (your frontend Vercel domain, comma-separated if multiple)
+- `FRONTEND_URL` (your frontend Vercel domain origin, comma-separated if multiple)
 - `JWT_ACCESS_SECRET`
 - `JWT_ACCESS_EXPIRES_IN`
 - `JWT_LOGIN_SECRET`
