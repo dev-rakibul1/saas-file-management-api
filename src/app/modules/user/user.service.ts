@@ -10,7 +10,6 @@ type CreateUserPayload = {
   name: string
   email: string
   password: string
-  role?: UserRole
 }
 
 type LoginUserPayload = {
@@ -22,6 +21,10 @@ type UpdateUserPayload = {
   name?: string
   email?: string
   password?: string
+}
+
+type SwitchRolePayload = {
+  role: UserRole
 }
 
 const buildJwtPayload = (user: User): JwtUserPayload => ({
@@ -36,23 +39,47 @@ const sanitizeUser = (user: User): SafeUser => {
 }
 
 const createUser = async (payload: CreateUserPayload): Promise<SafeUser> => {
-  const existingUser = await prisma.user.findUnique({
-    where: { email: payload.email },
-  })
+  const createdUser = await prisma.$transaction(async (tx) => {
+    const existingUser = await tx.user.findUnique({
+      where: { email: payload.email },
+    })
 
-  if (existingUser) {
-    throw new ApiError(409, 'Email already exists.')
-  }
+    if (existingUser) {
+      throw new ApiError(409, 'Email already exists.')
+    }
 
-  const hashedPassword = await bcrypt.hash(payload.password, env.BCRYPT_SALT_ROUNDS)
+    const hashedPassword = await bcrypt.hash(payload.password, env.BCRYPT_SALT_ROUNDS)
 
-  const createdUser = await prisma.user.create({
-    data: {
-      name: payload.name,
-      email: payload.email,
-      password: hashedPassword,
-      role: payload.role ?? UserRole.USER,
-    },
+    const newUser = await tx.user.create({
+      data: {
+        name: payload.name,
+        email: payload.email,
+        password: hashedPassword,
+        role: UserRole.USER,
+      },
+    })
+
+    const defaultPackage = await tx.package.findFirst({
+      where: {
+        name: 'Free',
+        isActive: true,
+      },
+    })
+
+    if (!defaultPackage) {
+      throw new ApiError(500, 'Default Free package is not configured by Admin.')
+    }
+
+    await tx.userSubscription.create({
+      data: {
+        userId: newUser.id,
+        packageId: defaultPackage.id,
+        status: 'ACTIVE',
+        isActive: true,
+      },
+    })
+
+    return newUser
   })
 
   return sanitizeUser(createdUser)
@@ -128,9 +155,58 @@ const updateUser = async (
   return sanitizeUser(updatedUser)
 }
 
+const switchRoleForTesting = async (
+  userId: string,
+  payload: SwitchRolePayload
+): Promise<SafeUser> => {
+  if (!env.ENABLE_TEST_ROLE_SWITCH) {
+    throw new ApiError(
+      403,
+      'Test-only role switch endpoint is disabled in this environment.'
+    )
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { id: userId },
+  })
+
+  if (!existingUser) {
+    throw new ApiError(404, 'User not found.')
+  }
+
+  if (existingUser.role === payload.role) {
+    return sanitizeUser(existingUser)
+  }
+
+  if (existingUser.role === UserRole.ADMIN && payload.role === UserRole.USER) {
+    const remainingAdminCount = await prisma.user.count({
+      where: {
+        role: UserRole.ADMIN,
+        id: {
+          not: userId,
+        },
+      },
+    })
+
+    if (remainingAdminCount < 1) {
+      throw new ApiError(400, 'At least one ADMIN user must remain in the system.')
+    }
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      role: payload.role,
+    },
+  })
+
+  return sanitizeUser(updatedUser)
+}
+
 export const UserService = {
   createUser,
   loginUser,
   getProfile,
   updateUser,
+  switchRoleForTesting,
 }

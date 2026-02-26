@@ -15,6 +15,33 @@ export type IGenericErrorResponse = {
 }
 
 const handleError = (error: unknown): IGenericErrorResponse => {
+  const statusCode =
+    typeof error === 'object' && error !== null && 'statusCode' in error
+      ? (error as { statusCode?: number }).statusCode
+      : undefined
+  const status =
+    typeof error === 'object' && error !== null && 'status' in error
+      ? (error as { status?: number }).status
+      : undefined
+  const type =
+    typeof error === 'object' && error !== null && 'type' in error
+      ? (error as { type?: string }).type
+      : undefined
+
+  if (type === 'entity.too.large' || statusCode === 413 || status === 413) {
+    return {
+      statusCode: 413,
+      message: 'Request payload is too large.',
+      errorMessages: [
+        {
+          path: 'body',
+          message:
+            'Payload exceeds server body limit. Reduce file size or increase REQUEST_BODY_LIMIT.',
+        },
+      ],
+    }
+  }
+
   if (error instanceof ApiError) {
     return {
       statusCode: error.statusCode,

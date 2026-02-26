@@ -1,6 +1,7 @@
 import { Server } from 'http'
 import app from './app'
 import { prisma } from './app/db/prisma'
+import runBootstrap from './app/utils/bootstrap'
 import env from './config/env'
 
 let server: Server
@@ -8,6 +9,7 @@ let server: Server
 const startServer = async (): Promise<void> => {
   try {
     await prisma.$connect()
+    await runBootstrap()
 
     server = app.listen(env.PORT, () => {
       console.log(`Server is running on: http://localhost:${env.PORT}`)

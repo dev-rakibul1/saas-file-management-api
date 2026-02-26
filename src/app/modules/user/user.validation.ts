@@ -1,6 +1,5 @@
 import { z } from 'zod'
-
-const userRoles = ['USER', 'ADMIN'] as const
+import { UserRole } from '@prisma/client'
 
 const createUserSchema = z.object({
   body: z.object({
@@ -15,7 +14,6 @@ const createUserSchema = z.object({
       .string({ required_error: 'Password is required.' })
       .min(6, 'Password must be at least 6 characters long.')
       .max(72, 'Password cannot exceed 72 characters.'),
-    role: z.enum(userRoles).optional(),
   }),
 })
 
@@ -51,8 +49,18 @@ const updateUserSchema = z.object({
     }),
 })
 
+const switchRoleForTestingSchema = z.object({
+  body: z.object({
+    role: z.nativeEnum(UserRole, {
+      required_error: 'role is required.',
+      invalid_type_error: 'Invalid role.',
+    }),
+  }),
+})
+
 export const UserValidation = {
   createUserSchema,
   loginUserSchema,
   updateUserSchema,
+  switchRoleForTestingSchema,
 }

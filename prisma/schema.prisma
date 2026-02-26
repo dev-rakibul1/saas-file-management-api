@@ -12,6 +12,12 @@ enum UserRole {
   ADMIN
 }
 
+enum SubscriptionStatus {
+  ACTIVE
+  SWITCHED
+  EXPIRED
+}
+
 model User {
   id        String   @id @default(uuid())
   name      String
@@ -21,6 +27,88 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  subscriptions UserSubscription[]
+  folders       Folder[]
+  files         File[]
+
   @@index([email])
   @@map("users")
+}
+
+model Package {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  maxFolders      Int
+  maxNestingLevel Int
+  allowedFileTypes String[]
+  maxFileSizeBytes Int
+  totalFileLimit  Int
+  filesPerFolder  Int
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  subscriptions UserSubscription[]
+
+  @@map("packages")
+}
+
+model UserSubscription {
+  id        String             @id @default(uuid())
+  userId    String
+  packageId String
+  status    SubscriptionStatus @default(ACTIVE)
+  isActive  Boolean            @default(true)
+  startDate DateTime           @default(now())
+  endDate   DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package Package @relation(fields: [packageId], references: [id], onDelete: Restrict)
+
+  @@index([userId, isActive])
+  @@index([userId, status])
+  @@index([packageId])
+  @@map("user_subscriptions")
+}
+
+model Folder {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  parentId  String?
+  depth     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   Folder? @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children Folder[] @relation("FolderTree")
+  files    File[]
+
+  @@index([userId])
+  @@index([parentId])
+  @@map("folders")
+}
+
+model File {
+  id           String   @id @default(uuid())
+  userId       String
+  folderId     String
+  originalName String
+  storedName   String
+  mimeType     String
+  extension    String
+  sizeBytes    Int
+  storagePath  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([folderId])
+  @@map("files")
 }

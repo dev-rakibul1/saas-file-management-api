@@ -27,4 +27,11 @@ router.patch(
   UserController.updateUser
 )
 
+router.patch(
+  '/test-role',
+  auth(),
+  validateRequest(UserValidation.switchRoleForTestingSchema),
+  UserController.switchRoleForTesting
+)
+
 export default router

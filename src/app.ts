@@ -1,13 +1,23 @@
 import cors from 'cors'
 import express, { Application, Request, Response } from 'express'
+import env from './config/env'
 import globalErrorHandler from './app/middlewares/globalErrorHandler'
 import router from './app/routes'
 
 const app: Application = express()
 
-app.use(cors())
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+const allowedOrigins = env.FRONTEND_URL.split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
+app.use(
+  cors({
+    origin: allowedOrigins.length ? allowedOrigins : true,
+    credentials: true,
+  })
+)
+app.use(express.json({ limit: env.REQUEST_BODY_LIMIT }))
+app.use(express.urlencoded({ extended: true, limit: env.REQUEST_BODY_LIMIT }))
 
 app.get('/', (_req: Request, res: Response) => {
   res.status(200).json({

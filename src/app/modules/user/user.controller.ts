@@ -61,9 +61,28 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+const switchRoleForTesting = catchAsync(async (req: Request, res: Response) => {
+  const authUser = (req as AuthRequest).user
+
+  if (!authUser) {
+    throw new ApiError(401, 'You are not authorized.')
+  }
+
+  const result = await UserService.switchRoleForTesting(authUser.userId, req.body)
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message:
+      'Test-only role switch applied. This endpoint is for testing only and not a production requirement.',
+    data: result,
+  })
+})
+
 export const UserController = {
   createUser,
   loginUser,
   getProfile,
   updateUser,
+  switchRoleForTesting,
 }
