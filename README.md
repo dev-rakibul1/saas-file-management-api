@@ -76,6 +76,7 @@ npm run lint
 | `PORT`                    | Yes         | API port                                              |
 | `NODE_ENV`                | Yes         | Runtime environment                                   |
 | `DATABASE_URL`            | Yes         | PostgreSQL connection string                          |
+| `DATABASE_POOLER_URL`     | Optional    | Preferred pooler URL (recommended for Vercel + Neon)  |
 | `FRONTEND_URL`            | Recommended | Allowed CORS origin(s), comma-separated (origin only) |
 | `JWT_ACCESS_SECRET`       | Yes         | Access token secret                                   |
 | `JWT_ACCESS_EXPIRES_IN`   | Yes         | Access token TTL (ex: `1d`)                           |
@@ -249,7 +250,7 @@ Frontend project docs:
 - `413 Request payload is too large`: increase `REQUEST_BODY_LIMIT` or upload smaller file
 - `401 Invalid or expired token`: login again and use fresh `accessToken`
 - `400 No active package found`: user must have an active subscription
-- `Prisma P1001` on startup: verify `DATABASE_URL` credentials. Test with `psql "$DATABASE_URL" -c "select 1"`. If auth fails, copy a fresh connection string from your DB provider (Neon) and update `.env`.
+- `Prisma P1001` on startup: verify `DATABASE_URL`/`DATABASE_POOLER_URL` credentials. Test with `psql "$DATABASE_URL" -c "select 1"`. For Vercel + Neon, set `DATABASE_POOLER_URL` to pooled connection string and redeploy.
 
 ## 11) Additional Docs
 
@@ -276,6 +277,7 @@ Required Vercel environment variables:
 
 - `NODE_ENV=production`
 - `DATABASE_URL`
+- `DATABASE_POOLER_URL` (recommended for Neon)
 - `FRONTEND_URL` (your frontend Vercel domain origin, comma-separated if multiple)
 - `JWT_ACCESS_SECRET`
 - `JWT_ACCESS_EXPIRES_IN`
