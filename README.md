@@ -2,6 +2,19 @@
 
 Backend API for a subscription-based SaaS file and folder management platform.
 
+## Technical Assessment Quick Info
+
+- GitHub Repository: [Backend Repo Link](https://github.com/<your-username>/<backend-repo>)
+- Live API Link: [https://saas-file-management-api.vercel.app/](https://saas-file-management-api.vercel.app/)
+- Live Frontend Link: [https://saas-storage-frontend.vercel.app/](https://saas-storage-frontend.vercel.app/)
+- Environment Template: [`.env.example`](.env.example)
+- Database Design PDF: [`docs/erd/saas-file-management-erd.pdf`](docs/erd/saas-file-management-erd.pdf)
+
+Demo credentials:
+
+- Admin: `fl.rakibul@gmail.com` / `12345678`
+- User: `demo.user@zoomit.com` / `12345678` (register once if not seeded)
+
 ## 1) Requirement Coverage
 
 Implemented modules:
@@ -41,6 +54,7 @@ Node requirement: `>=20`
 ```bash
 npm install
 cp .env.example .env
+# set DATABASE_URL in .env to your own PostgreSQL/Neon connection string
 npx prisma migrate dev
 npx prisma generate
 npm run dev
@@ -235,6 +249,7 @@ Frontend project docs:
 - `413 Request payload is too large`: increase `REQUEST_BODY_LIMIT` or upload smaller file
 - `401 Invalid or expired token`: login again and use fresh `accessToken`
 - `400 No active package found`: user must have an active subscription
+- `Prisma P1001` on startup: verify `DATABASE_URL` credentials. Test with `psql "$DATABASE_URL" -c "select 1"`. If auth fails, copy a fresh connection string from your DB provider (Neon) and update `.env`.
 
 ## 11) Additional Docs
 

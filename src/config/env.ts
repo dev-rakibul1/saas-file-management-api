@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import path from 'path'
 
-dotenv.config({ path: path.join(process.cwd(), '.env') })
+dotenv.config({ path: path.join(process.cwd(), '.env'), override: true })
 
 const env = {
   NODE_ENV: process.env.NODE_ENV ?? 'development',
@@ -21,9 +21,9 @@ const env = {
   JWT_LOGIN_SECRET: process.env.JWT_LOGIN_SECRET ?? 'change-me-login-secret',
   JWT_LOGIN_EXPIRES_IN: process.env.JWT_LOGIN_EXPIRES_IN ?? '15m',
   BCRYPT_SALT_ROUNDS: Number(process.env.BCRYPT_SALT_ROUNDS ?? 10),
-  DEFAULT_ADMIN_NAME: process.env.DEFAULT_ADMIN_NAME ?? 'System Admin',
-  DEFAULT_ADMIN_EMAIL: process.env.DEFAULT_ADMIN_EMAIL ?? 'admin@saas-storage.local',
-  DEFAULT_ADMIN_PASSWORD: process.env.DEFAULT_ADMIN_PASSWORD ?? 'Admin@12345',
+  DEFAULT_ADMIN_NAME: process.env.DEFAULT_ADMIN_NAME ?? 'Rakibul Islam',
+  DEFAULT_ADMIN_EMAIL: process.env.DEFAULT_ADMIN_EMAIL ?? 'fl.rakibul@gmail.com',
+  DEFAULT_ADMIN_PASSWORD: process.env.DEFAULT_ADMIN_PASSWORD ?? '12345678',
 }
 
 export default env

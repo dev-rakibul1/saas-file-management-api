@@ -1,4 +1,5 @@
 import { Server } from 'http'
+import { Prisma } from '@prisma/client'
 import app from './app'
 import { prisma } from './app/db/prisma'
 import runBootstrap from './app/utils/bootstrap'
@@ -15,6 +16,18 @@ const startServer = async (): Promise<void> => {
       console.log(`Server is running on: http://localhost:${env.PORT}`)
     })
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      if (error.errorCode === 'P1001') {
+        console.error(
+          'Database connection failed (P1001). Verify DATABASE_URL and test it with: psql "$DATABASE_URL" -c "select 1"'
+        )
+      } else {
+        console.error(
+          `Database initialization failed (${error.errorCode ?? 'unknown Prisma error'}).`
+        )
+      }
+    }
+
     console.error('Failed to start server:', error)
     await prisma.$disconnect()
     process.exit(1)

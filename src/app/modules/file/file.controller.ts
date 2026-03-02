@@ -53,7 +53,13 @@ const downloadFile = catchAsync(
     const file = await FileService.getDownloadFile(authUser.userId, fileId)
 
     if (CloudinaryStorage.isCloudinaryUrl(file.storagePath)) {
-      return res.redirect(file.storagePath)
+      const downloadUrl = CloudinaryStorage.buildPrivateDownloadUrl({
+        publicId: file.storedName,
+        extension: file.extension,
+        mimeType: file.mimeType,
+      })
+
+      return res.redirect(downloadUrl)
     }
 
     res.download(file.storagePath, file.originalName, (error) => {

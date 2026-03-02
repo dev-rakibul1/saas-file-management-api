@@ -13,6 +13,12 @@ type CloudinaryUploadResult = {
   secureUrl: string
 }
 
+type BuildCloudinaryDownloadUrlPayload = {
+  publicId: string
+  extension: string
+  mimeType: string
+}
+
 let cloudinaryConfigured = false
 
 const ensureCloudinaryConfig = (): void => {
@@ -92,6 +98,29 @@ const deleteCloudinaryAssets = async (publicIds: string[]): Promise<void> => {
   await Promise.all(publicIds.map(async (publicId) => deleteCloudinaryAsset(publicId)))
 }
 
+const resolveResourceType = (mimeType: string): 'image' | 'video' | 'raw' => {
+  if (mimeType === 'application/pdf' || mimeType.startsWith('image/')) {
+    return 'image'
+  }
+
+  if (mimeType.startsWith('video/') || mimeType.startsWith('audio/')) {
+    return 'video'
+  }
+
+  return 'raw'
+}
+
+const buildPrivateDownloadUrl = (payload: BuildCloudinaryDownloadUrlPayload): string => {
+  ensureCloudinaryConfig()
+
+  return cloudinary.utils.private_download_url(payload.publicId, payload.extension, {
+    resource_type: resolveResourceType(payload.mimeType),
+    type: 'upload',
+    attachment: true,
+    expires_at: Math.floor(Date.now() / 1000) + 5 * 60,
+  })
+}
+
 const isCloudinaryUrl = (fileUrl: string): boolean => {
   if (!env.CLOUDINARY_CLOUD_NAME) {
     return false
@@ -104,5 +133,6 @@ export const CloudinaryStorage = {
   uploadToCloudinary,
   deleteCloudinaryAsset,
   deleteCloudinaryAssets,
+  buildPrivateDownloadUrl,
   isCloudinaryUrl,
 }
