@@ -278,7 +278,7 @@ Required Vercel environment variables:
 - `NODE_ENV=production`
 - `DATABASE_URL`
 - `DATABASE_POOLER_URL` (recommended for Neon)
-- `FRONTEND_URL` (your frontend Vercel domain origin, comma-separated if multiple)
+- `FRONTEND_URL` (for this project: `https://saas-storage-frontend.vercel.app,http://localhost:3000`)
 - `JWT_ACCESS_SECRET`
 - `JWT_ACCESS_EXPIRES_IN`
 - `JWT_LOGIN_SECRET`
